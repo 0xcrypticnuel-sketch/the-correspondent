@@ -3,24 +3,24 @@
 import { useState, useEffect } from 'react';
 
 export default function Home() {
-  const [articles, setArticles] = useState([]);
+  const [articles, setArticles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [expanded, setExpanded] = useState({});
+  const [error, setError] = useState('');
+  const [expanded, setExpanded] = useState<{[key: string]: boolean}>({});
   const [filter, setFilter] = useState('All');
-  const [lastUpdated, setLastUpdated] = useState(null);
+  const [lastUpdated, setLastUpdated] = useState('');
 
   const fetchNews = async () => {
     setLoading(true);
-    setError(null);
+    setError('');
     try {
       const res = await fetch('/api/news');
       const data = await res.json();
       if (data.error) throw new Error(data.error);
       setArticles(data.articles);
       setLastUpdated(new Date().toLocaleTimeString());
-    } catch (err) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Something went wrong');
     } finally {
       setLoading(false);
     }
@@ -32,7 +32,7 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
-  const toggleExpand = (id) => {
+  const toggleExpand = (id: string) => {
     setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
@@ -68,7 +68,8 @@ export default function Home() {
             ↻ Refresh
           </button>
         </div>
-      </div><div className="max-w-6xl mx-auto px-4 py-8">
+      </div>
+      <div className="max-w-6xl mx-auto px-4 py-8">
         {loading && (
           <div className="text-center py-24">
             <div className="text-4xl mb-4">🗞️</div>
